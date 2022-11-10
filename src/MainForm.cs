@@ -7,6 +7,7 @@ namespace Awake
     public partial class MainForm : Form
     {
         int inactiveSeconds = 0;
+        int inactiveSecondsAll = 0;
         Point lastPosition = Cursor.Position;
 
         public MainForm()
@@ -32,10 +33,14 @@ namespace Awake
             var currentPosition = Cursor.Position;
 
             if (lastPosition.X == currentPosition.X && lastPosition.Y == currentPosition.Y)
+            {
+                inactiveSecondsAll++;
                 SetInactiveSecondsAndText(++inactiveSeconds);
+            }
             else
             {
                 lastPosition = currentPosition;
+                inactiveSecondsAll = 0;
                 SetInactiveSecondsAndText(0);
                 return;
             }
@@ -46,8 +51,8 @@ namespace Awake
 
         void SetInactiveSecondsAndText(int value)
         {
+            message.Text = $"Neaktivita: {inactiveSecondsAll / 60} min";
             inactiveSeconds = value;
-            message.Text = $"Neaktivita: {value / 60} min";
         }
 
         void MoveCursor()
@@ -55,6 +60,7 @@ namespace Awake
             var currentPosition = Cursor.Position;
             Cursor.Position = new Point(currentPosition.X + 10, currentPosition.Y + 10);
             Cursor.Position = new Point(currentPosition.X, currentPosition.Y);
+            inactiveSeconds = 0;
         }
     }
 }
