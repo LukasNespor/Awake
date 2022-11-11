@@ -38,7 +38,7 @@
             // MainTimer
             // 
             this.MainTimer.Enabled = true;
-            this.MainTimer.Interval = 1000;
+            this.MainTimer.Interval = 60000;
             this.MainTimer.Tick += new System.EventHandler(this.MainTimer_Tick);
             // 
             // message
@@ -47,12 +47,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.message.AutoSize = true;
-            this.message.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.message.Location = new System.Drawing.Point(22, 20);
+            this.message.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.message.Location = new System.Drawing.Point(78, 26);
             this.message.Name = "message";
-            this.message.Size = new System.Drawing.Size(215, 31);
+            this.message.Size = new System.Drawing.Size(121, 20);
             this.message.TabIndex = 0;
-            this.message.Text = "Neaktivita: 0 min";
+            this.message.Text = "Minimalizuj mě";
             // 
             // NotifyIcon
             // 
@@ -73,6 +73,8 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Nespi";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();

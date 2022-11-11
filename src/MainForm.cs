@@ -1,20 +1,27 @@
 ﻿using System;
-using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace Awake
 {
     public partial class MainForm : Form
     {
-        int inactiveSeconds = 0;
-        int inactiveSecondsAll = 0;
-        Point lastPosition = Cursor.Position;
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
 
-        public MainForm()
+        [Flags]
+        public enum EXECUTION_STATE : uint
         {
-            InitializeComponent();
-            Cursor = new Cursor(Cursor.Current.Handle);
+            ES_AWAYMODE_REQUIRED = 0x00000040,
+            ES_CONTINUOUS = 0x80000000,
+            ES_DISPLAY_REQUIRED = 0x00000002,
+            ES_SYSTEM_REQUIRED = 0x00000001
         }
+
+        public MainForm() => InitializeComponent();
+        void MainForm_Load(object sender, EventArgs e) => SetAwake(true);
+        void MainForm_FormClosing(object sender, FormClosingEventArgs e) => SetAwake(false);
+        void MainTimer_Tick(object sender, EventArgs e) => SetAwake(true);
 
         void MainForm_Resize(object sender, EventArgs e)
         {
@@ -28,39 +35,12 @@ namespace Awake
             WindowState = FormWindowState.Normal;
         }
 
-        void MainTimer_Tick(object sender, EventArgs e)
+        void SetAwake(bool keepAwake)
         {
-            var currentPosition = Cursor.Position;
-
-            if (lastPosition.X == currentPosition.X && lastPosition.Y == currentPosition.Y)
-            {
-                inactiveSecondsAll++;
-                SetInactiveSecondsAndText(++inactiveSeconds);
-            }
+            if (keepAwake)
+                SetThreadExecutionState(EXECUTION_STATE.ES_DISPLAY_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS);
             else
-            {
-                lastPosition = currentPosition;
-                inactiveSecondsAll = 0;
-                SetInactiveSecondsAndText(0);
-                return;
-            }
-
-            if (inactiveSeconds >= (5 * 60))
-                MoveCursor();
-        }
-
-        void SetInactiveSecondsAndText(int value)
-        {
-            message.Text = $"Neaktivita: {inactiveSecondsAll / 60} min";
-            inactiveSeconds = value;
-        }
-
-        void MoveCursor()
-        {
-            var currentPosition = Cursor.Position;
-            Cursor.Position = new Point(currentPosition.X + 10, currentPosition.Y + 10);
-            Cursor.Position = new Point(currentPosition.X, currentPosition.Y);
-            inactiveSeconds = 0;
+                SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
         }
     }
 }
